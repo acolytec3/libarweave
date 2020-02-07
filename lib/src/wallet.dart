@@ -1,15 +1,13 @@
 import 'package:jose/jose.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:http/http.dart' as http;
 import 'dart:math';
-import 'package:libarweave/libarweave.dart';
+import 'package:libarweave/src/utils.dart';
 
 class Wallet {
   JsonWebKey _wallet;
   String _owner;
   String _address;
-  String api_url = "http://54.36.165.155:1984";
 
   Wallet(String jsonWebKey) {
     var jwk = jsonDecode(jsonWebKey);
@@ -42,13 +40,13 @@ class Wallet {
   }
 
   Future<double> balance() async {
-    var response = await http.get(api_url + '/wallet/' + _address + '/balance');
-    return int.parse(response.body) / pow(10, 12);
+    var response = await getHttp('/wallet/$_address/balance');
+    return int.parse(response) / pow(10, 12);
   }
 
   Future<String> last_tx() async {
-    var response = await http.get(api_url + '/wallet/' + _address + '/last_tx');
-    return response.body;
+    var response = await getHttp('/wallet/$_address/last_tx');
+    return response;
   }
 
   Future<List> transactionHistory() async {
@@ -56,9 +54,11 @@ class Wallet {
       'query':
           'query {transactions(from: ["${_address}"]){id tags{name value}}} '
     };
-    final response = await http.post('http://54.36.165.155:1984/arql',
-        body: jsonEncode(query));
-    final txns = jsonDecode(response.body)['data']['transactions'];
-    return txns;
+    final response = await postHttp('/arql', jsonEncode(query));
+    if (response != '') {
+      final txns = jsonDecode(response)['data']['transactions'];
+      return txns;
+    }
+    return [];
   }
 }
