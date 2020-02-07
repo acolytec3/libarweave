@@ -49,7 +49,7 @@ class Wallet {
     return response;
   }
 
-  Future<List> transactionHistory() async {
+  Future<List> dataTransactionHistory() async {
     final query = {
       'query':
           'query {transactions(from: ["${_address}"]){id tags{name value}}} '

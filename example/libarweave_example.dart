@@ -21,6 +21,6 @@ void main() async {
   print('Wallet\'s last transaction ID is: ${lastTxn}');
   var txnDetails = await Transaction.getTransaction(lastTxn);
   print('Last transaction reward :${txnDetails['reward']}');
-  var txns = await myWallet.transactionHistory();
-  print('Last transactions :${txns}');
+  var txns = await myWallet.dataTransactionHistory();
+  print('Last data transactions :${txns}');
 }

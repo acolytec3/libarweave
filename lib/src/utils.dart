@@ -2,7 +2,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 
-
 String api_url = 'http://arweave.net';
 List peers;
 
@@ -12,15 +11,19 @@ Future<List> getPeers() async {
   return peers;
 }
 
-void setPeer() async {
-  peers = await getPeers();
-  var rng = Random(25);
-  api_url = 'http://' + peers[rng.nextInt(peers.length)];
+void setPeer({String peerAddress}) async {
+  if (peerAddress != null) {
+    (api_url = peerAddress);
+  } else {
+    peers = await getPeers();
+    var rng = Random(25);
+    api_url = 'http://' + peers[rng.nextInt(peers.length)];
+  }
 }
 
 dynamic getHttp(String route) async {
   var i = 0;
-  while (true) {
+  while (i < 5) {
     try {
       final response = await http.get(api_url + route);
       return response.body;
