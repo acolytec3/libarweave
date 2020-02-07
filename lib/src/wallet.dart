@@ -49,6 +49,10 @@ class Wallet {
     return response;
   }
 
+  Future<List> allTransactions() async {
+    return [];
+  }
+  
   Future<List> dataTransactionHistory() async {
     final query = {
       'query':

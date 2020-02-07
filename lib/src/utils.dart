@@ -6,8 +6,13 @@ String api_url = 'http://arweave.net';
 List peers;
 
 Future<List> getPeers() async {
+  List peers;
   final response = await http.get(api_url + '/peers');
-  List peers = jsonDecode(response.body);
+  try {
+    peers = jsonDecode(response.body);
+  } catch (__) {
+    peers = [];
+  }
   return peers;
 }
 
@@ -15,14 +20,19 @@ void setPeer({String peerAddress}) async {
   if (peerAddress != null) {
     (api_url = peerAddress);
   } else {
-    peers = await getPeers();
-    var rng = Random(25);
-    api_url = 'http://' + peers[rng.nextInt(peers.length)];
+    try {
+      peers = await getPeers();
+      var rng = Random(25);
+      api_url = 'http://' + peers[rng.nextInt(peers.length)];
+    } catch (__) {
+      print('Error message: $__');
+    }
   }
 }
 
 dynamic getHttp(String route) async {
   var i = 0;
+  String error;
   while (i < 5) {
     try {
       final response = await http.get(api_url + route);
@@ -31,18 +41,25 @@ dynamic getHttp(String route) async {
       print('Error message: ${__}');
       i++;
       await setPeer();
+      error = __;
     }
   }
+  return error;
 }
 
 dynamic postHttp(String route, dynamic body) async {
-  while (true) {
+  var i = 0;
+  String error;
+  while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);
       return response.body;
     } catch (__) {
-      print('Error message: ' + __);
+      print('Error message: ${__}');
+      i++;
       await setPeer();
+      error = __;
     }
   }
+  return error;
 }
