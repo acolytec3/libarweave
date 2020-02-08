@@ -63,3 +63,12 @@ dynamic postHttp(String route, dynamic body) async {
   }
   return error;
 }
+
+double winstonToAr(String winston) {
+  return int.parse(winston) / pow(10, 12);
+}
+
+String arToWinston(double ar) {
+  return (ar * pow(10,12)).toString();
+}
+

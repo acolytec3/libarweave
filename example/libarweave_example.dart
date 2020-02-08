@@ -15,12 +15,19 @@ void main() async {
   var myWallet = Wallet(walletString);
   myWallet.loadWallet(walletString);
   print('Wallet address: ${myWallet.address}');
+  setPeer(peerAddress: 'http://arweave.net');
   var balance = await myWallet.balance();
   print('Wallet balance: ${balance}');
-  var lastTxn = await myWallet.last_tx();
+  var lastTxn = await myWallet.lastTransaction();
   print('Wallet\'s last transaction ID is: ${lastTxn}');
   var txnDetails = await Transaction.getTransaction(lastTxn);
   print('Last transaction reward :${txnDetails['reward']}');
   var txns = await myWallet.dataTransactionHistory();
   print('Last data transactions :${txns}');
+  var txPrice = await Transaction.transactionPrice(100);
+  print('Price for transaction of 100 bytes is: $txPrice Winston');
+  var allTxns = await myWallet.allTransactionsFromAddress();
+  print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
+  allTxns = await myWallet.allTransactionsToAddress();
+  print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
 }

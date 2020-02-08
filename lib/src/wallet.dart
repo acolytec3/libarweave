@@ -41,18 +41,24 @@ class Wallet {
 
   Future<double> balance() async {
     var response = await getHttp('/wallet/$_address/balance');
-    return int.parse(response) / pow(10, 12);
+    return winstonToAr(response);
   }
 
-  Future<String> last_tx() async {
+  Future<String> lastTransaction() async {
     var response = await getHttp('/wallet/$_address/last_tx');
     return response;
   }
 
-  Future<List> allTransactions() async {
-    return [];
+  Future<List> allTransactionsFromAddress() async {
+    final response = await getHttp('/wallet/$_address/txs/');
+    return jsonDecode(response);
   }
-  
+
+  Future<List> allTransactionsToAddress() async {
+    final response = await getHttp('/wallet/$_address/deposits/');
+    return jsonDecode(response);
+  }
+
   Future<List> dataTransactionHistory() async {
     final query = {
       'query':
