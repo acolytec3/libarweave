@@ -1,8 +1,8 @@
 import 'package:jose/jose.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'dart:math';
 import 'package:libarweave/src/utils.dart';
+import 'package:pointycastle/export.dart';
 
 class Wallet {
   JsonWebKey _wallet;
@@ -65,10 +65,59 @@ class Wallet {
           'query {transactions(from: ["${_address}"]){id tags{name value}}} '
     };
     final response = await postHttp('/arql', jsonEncode(query));
-    if (response != '') {
-      final txns = jsonDecode(response)['data']['transactions'];
+    if (response.body != '') {
+      final txns = jsonDecode(response.body)['data']['transactions'];
       return txns;
     }
     return [];
+  }
+
+  List<int> signTransaction(String lastTx, String reward,
+      {String targetAddress = '',
+      List tags,
+      String quantity = '',
+      String data = ''}) {
+    final dataBytes = decodeBase64EncodedBytes(data);
+    final lastTxBytes = decodeBase64EncodedBytes(lastTx);
+    final targetBytes = decodeBase64EncodedBytes(targetAddress);
+    final ownerBytes = decodeBase64EncodedBytes(_owner);
+    final rewardBytes = utf8.encode(reward);
+    final quantityBytes = utf8.encode(quantity);
+
+    
+    final rawTransaction = ownerBytes +
+        targetBytes +
+        dataBytes +
+        quantityBytes +
+        rewardBytes +
+        lastTxBytes;
+
+    return _wallet.sign(rawTransaction,algorithm: 'RS256');
+
+  }
+
+  dynamic postTransaction(List<int> signature, String lastTx, String reward,
+      {String targetAddress = '',
+      List tags,
+      String quantity = '',
+      String data = ''}) async {
+    final digest = SHA3Digest(256, true);
+    final hash = digest.process(signature);
+    print('Transaction hash is: $hash');
+    final id = encodeBase64EncodedBytes(hash);
+    print('Transaction ID is: $id');
+    final body = json.encode({
+      'id': id,
+      'last_tx': lastTx,
+      'owner': _owner,
+      'tags': tags,
+      'target': targetAddress,
+      'reward': reward,
+      'quantity': quantity,
+      'data': data,
+      'signature': signature
+    });
+    final response = await postHttp('/tx', body);
+    return response;
   }
 }

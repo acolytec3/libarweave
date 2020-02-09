@@ -12,6 +12,7 @@ void main() async {
     "dq": "a0_ey6OZWnWFleYHH60PtrGw7l_AXZvLbVBG_CLcfwQ1M1oi2OZVpxkQ4t95uTxq-lCdegZ9QhAfBessaOwLUk5IVjbk2Un98RByG784JuS-8-mrg7YKOA5fn56idax_IWiBE46Cxnu8ITlmbHKmHw-sdpnm3hb50jB4evJmt3fcw_KI8_zKPORBM3vxljy7NJnSSh7s7QE0Sl0Svb427Drut6L3rAimtK5mzCseTcg9pkp707ZbClcYWfafF9VdB2A9TgMCOo6xfJEANsT18GkMH4B6PXDHBAhsNrRh2O0XOeWsfZStoyj5Mdt3b9JJfPFMW3h38yQ_lrmKYZQfJQ",
     "qi": "aDsPYxE-JBYsYhCYXSU7WsCrnFxNsRpFMcYXdmdryYIdQUpeemChDGzVJXLnJhE4cAS9TtLcNg82xZSKZvHrnkbFpRfSJxzEnvIXW4V0LHkxkxbmM0e9B7UrpYm6LKtvEY6I7L8wHFpHdOwV6NjY925oULEV156X0r55V7N0XF-jy3rbm71DCWRh6IDRghhCZQ3aNgJxE-OtnABqasaY6CQnTDRXLkGE0kq9GCx85-92fQLHMzvrMhr9m_2MHYJ_gZehL4j95CQzhD3Zh602D0YYYwRSsU4h5HGjlmN52pe-rfTLgwCJq5295s7qUP8TTMzbZAOM_hehksHpAaFghA"
 }''';
+
   var myWallet = Wallet(walletString);
   myWallet.loadWallet(walletString);
   print('Wallet address: ${myWallet.address}');
@@ -30,4 +31,8 @@ void main() async {
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
   allTxns = await myWallet.allTransactionsToAddress();
   print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
+  final txSignature = await myWallet.signTransaction(lastTxn, txPrice, targetAddress: 'bLkyTRJCYg8WxBKrjBwAaRe1H7HYDfXzl7YKCENvw-Q', quantity: '1');
+  print('Raw transaction is: ${txSignature.toString()}');
+  final response = await myWallet.postTransaction(txSignature, lastTxn, txPrice);
+  print(response.statusCode);
 }

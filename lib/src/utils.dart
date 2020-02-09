@@ -53,7 +53,7 @@ dynamic postHttp(String route, dynamic body) async {
   while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);
-      return response.body;
+      return response;
     } catch (__) {
       print('Error message: ${__}');
       i++;
@@ -71,4 +71,14 @@ double winstonToAr(String winston) {
 String arToWinston(double ar) {
   return (ar * pow(10,12)).toString();
 }
+
+List<int> decodeBase64EncodedBytes(String encodedString) =>
+    encodedString == null
+        ? null
+        : base64Url.decode(encodedString +
+            List.filled((4 - encodedString.length % 4) % 4, '=').join());
+
+
+String encodeBase64EncodedBytes(List<int> data) =>
+    data == null ? null : base64Url.encode(data).replaceAll('=', '');
 
