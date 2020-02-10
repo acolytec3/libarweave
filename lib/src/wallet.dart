@@ -77,45 +77,55 @@ class Wallet {
       List tags,
       String quantity = '',
       String data = ''}) {
-    final dataBytes = decodeBase64EncodedBytes(data);
+    final dataBytes = decodeBase64EncodedBytes(base64Url.encode(ascii.encode(data)));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
     final rewardBytes = utf8.encode(reward);
     final quantityBytes = utf8.encode(quantity);
+    var tagsBytes;
+    if (tags != null) {
+      for (var tag in tags) {
+        tagsBytes += decodeBase64EncodedBytes(tag['key']);
+        tagsBytes += decodeBase64EncodedBytes(tag['value']);
+      }
+    } 
 
-    
-    final rawTransaction = ownerBytes +
+    var rawTransaction = ownerBytes +
         targetBytes +
         dataBytes +
         quantityBytes +
         rewardBytes +
         lastTxBytes;
 
-    return _wallet.sign(rawTransaction,algorithm: 'RS256');
+    if (tagsBytes != null){
+      rawTransaction += tagsBytes;
+    }
 
+    return _wallet.sign(rawTransaction, algorithm: 'RS256');
   }
 
   dynamic postTransaction(List<int> signature, String lastTx, String reward,
       {String targetAddress = '',
       List tags,
-      String quantity = '',
+      String quantity = '0',
       String data = ''}) async {
     final digest = SHA3Digest(256, true);
     final hash = digest.process(signature);
+    tags = [];
     print('Transaction hash is: $hash');
     final id = encodeBase64EncodedBytes(hash);
     print('Transaction ID is: $id');
     final body = json.encode({
       'id': id,
       'last_tx': lastTx,
-      'owner': _owner,
+      'owner': encodeBase64EncodedBytes(ascii.encode(_owner)),
       'tags': tags,
-      'target': targetAddress,
+      'target': encodeBase64EncodedBytes(ascii.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,
-      'data': data,
-      'signature': signature
+      'data': encodeBase64EncodedBytes(ascii.encode(data)),
+      'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);
     return response;

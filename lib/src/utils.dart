@@ -50,6 +50,7 @@ dynamic getHttp(String route) async {
 dynamic postHttp(String route, dynamic body) async {
   var i = 0;
   String error;
+  print(JsonEncoder.withIndent('  ').convert(body));
   while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);

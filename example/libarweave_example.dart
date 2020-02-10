@@ -1,4 +1,5 @@
 import 'package:libarweave/libarweave.dart';
+import 'dart:convert';
 
 void main() async {
   var walletString = '''{
@@ -16,7 +17,7 @@ void main() async {
   var myWallet = Wallet(walletString);
   myWallet.loadWallet(walletString);
   print('Wallet address: ${myWallet.address}');
-  setPeer(peerAddress: 'http://arweave.net');
+  setPeer(peerAddress: 'https://arweave.net:443');
   var balance = await myWallet.balance();
   print('Wallet balance: ${balance}');
   var lastTxn = await myWallet.lastTransaction();
@@ -25,14 +26,18 @@ void main() async {
   print('Last transaction reward :${txnDetails['reward']}');
   var txns = await myWallet.dataTransactionHistory();
   print('Last data transactions :${txns}');
-  var txPrice = await Transaction.transactionPrice(100);
+  final data = 'Darting into Arweave';
+  final encodedData = base64Url.encode((ascii.encode(data)));
+  final byteSize = decodeBase64EncodedBytes(encodedData).length;
+  var txPrice = await Transaction.transactionPrice(byteSize);
   print('Price for transaction of 100 bytes is: $txPrice Winston');
   var allTxns = await myWallet.allTransactionsFromAddress();
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
   allTxns = await myWallet.allTransactionsToAddress();
   print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
-  final txSignature = await myWallet.signTransaction(lastTxn, txPrice, targetAddress: 'bLkyTRJCYg8WxBKrjBwAaRe1H7HYDfXzl7YKCENvw-Q', quantity: '1');
+  final txSignature = await myWallet.signTransaction(lastTxn, txPrice, data: 'Darting into Arweave');
   print('Raw transaction is: ${txSignature.toString()}');
-  final response = await myWallet.postTransaction(txSignature, lastTxn, txPrice);
+  final response = await myWallet.postTransaction(txSignature, lastTxn, txPrice, data: 'Darting into Arweave');
   print(response.statusCode);
+  print(response.body);
 }
