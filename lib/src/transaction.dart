@@ -14,8 +14,14 @@ class Transaction {
       return jsonDecode(response.body);
     }
 
-    static Future<String> transactionPrice(int bytes, [String targetAddress = '']) async  {
-      final response = await getHttp('/price/${bytes.toString()}/$targetAddress');
+    static Future<String> transactionPrice({int numBytes = 0, String data, String targetAddress = ''}) async  {
+      var byteSize;
+      if (data != null) {
+        byteSize = base64Url.encode(ascii.encode(data)).length;
+      } else {
+        byteSize = numBytes;
+      }
+      final response = await getHttp('/price/${byteSize.toString()}/$targetAddress');
       return response;
     }
 }
