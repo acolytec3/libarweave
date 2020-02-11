@@ -77,7 +77,7 @@ class Wallet {
       List tags,
       String quantity = '0',
       String data = ''}) {
-    final dataBytes = decodeBase64EncodedBytes(base64Url.encode(ascii.encode(data)));
+    final dataBytes = decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
@@ -89,18 +89,17 @@ class Wallet {
         tagsBytes += decodeBase64EncodedBytes(tag['key']);
         tagsBytes += decodeBase64EncodedBytes(tag['value']);
       }
-    } 
+    } else {
+      tagsBytes = base64Url.decode('');
+    }
 
     var rawTransaction = ownerBytes +
         targetBytes +
         dataBytes +
         quantityBytes +
         rewardBytes +
-        lastTxBytes;
-
-    if (tagsBytes != null){
-      rawTransaction += tagsBytes;
-    }
+        lastTxBytes +
+        tagsBytes;
 
     return _wallet.sign(rawTransaction, algorithm: 'RS256');
   }
@@ -119,12 +118,12 @@ class Wallet {
     final body = json.encode({
       'id': id,
       'last_tx': lastTx,
-      'owner': encodeBase64EncodedBytes(ascii.encode(_owner)),
+      'owner': _owner,
       'tags': tags,
-      'target': encodeBase64EncodedBytes(ascii.encode(targetAddress)),
+      'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,
-      'data': encodeBase64EncodedBytes(ascii.encode(data)),
+      'data': encodeBase64EncodedBytes(utf8.encode(data)),
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);
