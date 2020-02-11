@@ -109,7 +109,7 @@ class Wallet {
       List tags,
       String quantity = '0',
       String data = ''}) async {
-    final digest = SHA3Digest(256, true);
+    final digest = SHA256Digest();
     final hash = digest.process(signature);
     tags = [];
     print('Transaction hash is: $hash');
