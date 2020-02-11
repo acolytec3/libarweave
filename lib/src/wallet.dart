@@ -75,7 +75,7 @@ class Wallet {
   List<int> signTransaction(String lastTx, String reward,
       {String targetAddress = '',
       List tags,
-      String quantity = '',
+      String quantity = '0',
       String data = ''}) {
     final dataBytes = decodeBase64EncodedBytes(base64Url.encode(ascii.encode(data)));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
