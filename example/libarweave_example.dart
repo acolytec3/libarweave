@@ -1,5 +1,4 @@
 import 'package:libarweave/libarweave.dart';
-import 'dart:convert';
 
 void main() async {
   var walletString = '''{
