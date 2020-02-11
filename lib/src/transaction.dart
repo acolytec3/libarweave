@@ -24,4 +24,9 @@ class Transaction {
       final response = await getHttp('/price/${byteSize.toString()}/$targetAddress');
       return response;
     }
+
+    static Future<String> transactionAnchor() async {
+    final response = await getHttp('/tx_anchor');
+    return response;
+  }
 }
