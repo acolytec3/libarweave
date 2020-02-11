@@ -27,9 +27,7 @@ void main() async {
   var txns = await myWallet.dataTransactionHistory();
   print('Last data transactions :${txns}');
   final data = 'Darting into Arweave';
-  final encodedData = base64Url.encode((ascii.encode(data)));
-  final byteSize = decodeBase64EncodedBytes(encodedData).length;
-  var txPrice = await Transaction.transactionPrice(byteSize);
+  var txPrice = await Transaction.transactionPrice(data:data);
   print('Price for transaction of 100 bytes is: $txPrice Winston');
   var allTxns = await myWallet.allTransactionsFromAddress();
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
