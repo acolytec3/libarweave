@@ -10,6 +10,7 @@ dependencies:
   jose: '>=0.1.2'
   crypto: '>=2.1.3'
   http: '>=0.0.0'
+  crypto_keys: ^0.1.0
 
 dev_dependencies:
   pedantic: ^1.8.0

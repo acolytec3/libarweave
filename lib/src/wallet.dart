@@ -3,16 +3,18 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
+import 'package:crypto_keys/crypto_keys.dart';
 
 class Wallet {
   JsonWebKey _wallet;
   String _owner;
   String _address;
-
+  dynamic _jwk;
+  
   Wallet(String jsonWebKey) {
-    var jwk = jsonDecode(jsonWebKey);
-    _wallet = JsonWebKey.fromJson(jwk);
-    _owner = jwk['n'];
+    _jwk = jsonDecode(jsonWebKey);
+    _wallet = JsonWebKey.fromJson(_jwk);
+    _owner = _jwk['n'];
     _address = base64Url.encode(sha256
         .convert(base64Url.decode(
             _owner + List.filled((4 - _owner.length % 4) % 4, '=').join()))
@@ -37,6 +39,10 @@ class Wallet {
 
   String get address {
     return _address;
+  }
+
+  String get privateKey {
+    return KeyPair.fromJwk(_jwk).privateKey.toString();  
   }
 
   Future<double> balance() async {
@@ -72,7 +78,7 @@ class Wallet {
     return [];
   }
 
-  List<int> signTransaction(String lastTx, String reward,
+  List<int> createTransaction(String lastTx, String reward,
       {String targetAddress = '',
       List tags,
       String quantity = '0',
@@ -84,6 +90,7 @@ class Wallet {
     final rewardBytes = utf8.encode(reward);
     final quantityBytes = utf8.encode(quantity);
     var tagsBytes;
+    
     if (tags != null) {
       for (var tag in tags) {
         tagsBytes += decodeBase64EncodedBytes(tag['key']);
@@ -101,7 +108,7 @@ class Wallet {
         lastTxBytes +
         tagsBytes;
 
-    return _wallet.sign(rawTransaction, algorithm: 'RS256');
+    return rawTransaction;
   }
 
   dynamic postTransaction(List<int> signature, String lastTx, String reward,
