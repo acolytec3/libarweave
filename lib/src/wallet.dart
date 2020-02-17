@@ -1,26 +1,29 @@
+import 'dart:typed_data';
+
 import 'package:jose/jose.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
 
-
 class Wallet {
   JsonWebKey _wallet;
   String _owner;
   String _address;
   dynamic _jwk;
-  
-  Wallet(String jsonWebKey) {
-    _jwk = jsonDecode(jsonWebKey);
-    _wallet = JsonWebKey.fromJson(_jwk);
-    _owner = _jwk['n'];
-    _address = base64Url.encode(sha256
-        .convert(base64Url.decode(
-            _owner + List.filled((4 - _owner.length % 4) % 4, '=').join()))
-        .bytes);
-    if (_address.endsWith('=')) {
-      _address = _address.substring(0, _address.length - 1);
+
+  Wallet({String jsonWebKey}) {
+    if (jsonWebKey != null) {
+      _jwk = jsonDecode(jsonWebKey);
+      _wallet = JsonWebKey.fromJson(_jwk);
+      _owner = _jwk['n'];
+      _address = base64Url.encode(sha256
+          .convert(base64Url.decode(
+              _owner + List.filled((4 - _owner.length % 4) % 4, '=').join()))
+          .bytes);
+      if (_address.endsWith('=')) {
+        _address = _address.substring(0, _address.length - 1);
+      }
     }
   }
 
@@ -78,19 +81,18 @@ class Wallet {
     return [];
   }
 
-  List<int> createTransaction(String lastTx, String reward,
+  Uint8List createTransaction(String lastTx, String reward,
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      String data = ''}) {
-    final dataBytes = decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
+      Uint8List data}) {
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
     final rewardBytes = utf8.encode(reward);
     final quantityBytes = utf8.encode(quantity);
     var tagsBytes;
-    
+
     if (tags != null) {
       for (var tag in tags) {
         tagsBytes += decodeBase64EncodedBytes(tag['key']);
@@ -102,20 +104,21 @@ class Wallet {
 
     var rawTransaction = ownerBytes +
         targetBytes +
-        dataBytes +
+        data +
         quantityBytes +
         rewardBytes +
         lastTxBytes +
         tagsBytes;
 
-    return rawTransaction;
+    return Uint8List.fromList(rawTransaction);
   }
 
-  dynamic postTransaction(List<int> signature, String lastTx, String reward,
+  Future<String> postTransaction(
+      List<int> signature, String lastTx, String reward,
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      String data = ''}) async {
+      Uint8List data}) async {
     final digest = SHA256Digest();
     final hash = digest.process(signature);
     tags = [];
@@ -130,10 +133,10 @@ class Wallet {
       'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,
-      'data': encodeBase64EncodedBytes(utf8.encode(data)),
+      'data': data,
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);
-    return response;
+    return response.toString();
   }
 }

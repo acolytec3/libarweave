@@ -1,4 +1,6 @@
 import 'package:libarweave/libarweave.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 void main() async {
   var walletString = '''{
@@ -12,14 +14,15 @@ void main() async {
     "dq": "a0_ey6OZWnWFleYHH60PtrGw7l_AXZvLbVBG_CLcfwQ1M1oi2OZVpxkQ4t95uTxq-lCdegZ9QhAfBessaOwLUk5IVjbk2Un98RByG784JuS-8-mrg7YKOA5fn56idax_IWiBE46Cxnu8ITlmbHKmHw-sdpnm3hb50jB4evJmt3fcw_KI8_zKPORBM3vxljy7NJnSSh7s7QE0Sl0Svb427Drut6L3rAimtK5mzCseTcg9pkp707ZbClcYWfafF9VdB2A9TgMCOo6xfJEANsT18GkMH4B6PXDHBAhsNrRh2O0XOeWsfZStoyj5Mdt3b9JJfPFMW3h38yQ_lrmKYZQfJQ",
     "qi": "aDsPYxE-JBYsYhCYXSU7WsCrnFxNsRpFMcYXdmdryYIdQUpeemChDGzVJXLnJhE4cAS9TtLcNg82xZSKZvHrnkbFpRfSJxzEnvIXW4V0LHkxkxbmM0e9B7UrpYm6LKtvEY6I7L8wHFpHdOwV6NjY925oULEV156X0r55V7N0XF-jy3rbm71DCWRh6IDRghhCZQ3aNgJxE-OtnABqasaY6CQnTDRXLkGE0kq9GCx85-92fQLHMzvrMhr9m_2MHYJ_gZehL4j95CQzhD3Zh602D0YYYwRSsU4h5HGjlmN52pe-rfTLgwCJq5295s7qUP8TTMzbZAOM_hehksHpAaFghA"
 }''';
-  var myWallet = Wallet(walletString);
+  var myWallet = Wallet(jsonWebKey:walletString);
   myWallet.loadWallet(walletString);
   print('Wallet address: ${myWallet.address}');
   setPeer(peerAddress: 'https://arweave.net:443');
   var balance = await myWallet.balance();
   print('Wallet balance: ${balance}');
-  var lastTxn = await Transaction.transactionAnchor();
-  print('Wallet\'s last transaction ID is: ${lastTxn}');
+  var txAnchor = await Transaction.transactionAnchor();
+  print('Wallet\'s transaction anchor is: ${txAnchor}');
+  var lastTxn = await myWallet.lastTransaction();
   var txnDetails = await Transaction.getTransaction(lastTxn);
   print('Last transaction reward :${txnDetails['reward']}');
   var txns = await myWallet.dataTransactionHistory();
@@ -31,8 +34,8 @@ void main() async {
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
   allTxns = await myWallet.allTransactionsToAddress();
   print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
-  final rawTransaction = await myWallet.createTransaction(lastTxn, txPrice, data: data);
-  print('Raw transaction is: ${rawTransaction.toString()}');
+  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: Uint8List.fromList(utf8.encode(data)));
+//  print('Raw transaction is: ${rawTransaction.toString()}');
   //final response = await myWallet.postTransaction(rawTransaction, lastTxn, txPrice, data: data);
   //print(response.statusCode);
   //print(response.body);
