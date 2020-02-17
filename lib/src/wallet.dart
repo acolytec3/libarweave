@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
-import 'package:crypto_keys/crypto_keys.dart';
+
 
 class Wallet {
   JsonWebKey _wallet;
@@ -41,8 +41,8 @@ class Wallet {
     return _address;
   }
 
-  String get privateKey {
-    return KeyPair.fromJwk(_jwk).privateKey.toString();  
+  JsonWebKey get jwk {
+    return _wallet;
   }
 
   Future<double> balance() async {
