@@ -81,11 +81,12 @@ class Wallet {
     return [];
   }
 
-  Uint8List createTransaction(String lastTx, String reward,
+  List<int> createTransaction(String lastTx, String reward,
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      Uint8List data}) {
+      String data = ''}) {
+    final dataBytes = decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
@@ -104,13 +105,13 @@ class Wallet {
 
     var rawTransaction = ownerBytes +
         targetBytes +
-        data +
+        dataBytes +
         quantityBytes +
         rewardBytes +
         lastTxBytes +
         tagsBytes;
 
-    return Uint8List.fromList(rawTransaction);
+    return rawTransaction;
   }
 
   Future<String> postTransaction(
@@ -118,11 +119,10 @@ class Wallet {
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      Uint8List data}) async {
+      String data = ''}) async {
     final digest = SHA256Digest();
     final hash = digest.process(signature);
     tags = [];
-    print('Transaction hash is: $hash');
     final id = encodeBase64EncodedBytes(hash);
     print('Transaction ID is: $id');
     final body = json.encode({
@@ -133,7 +133,7 @@ class Wallet {
       'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,
-      'data': data,
+      'data': encodeBase64EncodedBytes(utf8.encode(data)),
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);

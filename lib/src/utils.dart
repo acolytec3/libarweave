@@ -53,6 +53,8 @@ dynamic postHttp(String route, dynamic body) async {
   while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);
+      print('Http post request status code: ${response.statusCode}');
+      print('Http post request status reason: ${response.body.toString()}');
       return response;
     } catch (__) {
       print('Error message: ${__}');
