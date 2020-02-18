@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:jose/jose.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
@@ -86,23 +84,29 @@ class Wallet {
       List tags,
       String quantity = '0',
       String data = ''}) {
-    final dataBytes = decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
+    final dataBytes =
+        decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
     final rewardBytes = utf8.encode(reward);
     final quantityBytes = utf8.encode(quantity);
-    var tagsBytes;
+    List<int> tagsBytes = [] ;
 
+    
     if (tags != null) {
       for (var tag in tags) {
-        tagsBytes += decodeBase64EncodedBytes(tag['key']);
-        tagsBytes += decodeBase64EncodedBytes(tag['value']);
+        tagsBytes += decodeBase64EncodedBytes(
+            encodeBase64EncodedBytes(utf8.encode(tag['name'])));
+        tagsBytes += decodeBase64EncodedBytes(
+            encodeBase64EncodedBytes(utf8.encode(tag['value'])));
       }
     } else {
-      tagsBytes = base64Url.decode('');
+      tagsBytes = [];
     }
 
+    print('Tags are: ${tags.toString()}');
+    print('Tag bytes: ${tagsBytes.toString()}');
     var rawTransaction = ownerBytes +
         targetBytes +
         dataBytes +
@@ -122,14 +126,33 @@ class Wallet {
       String data = ''}) async {
     final digest = SHA256Digest();
     final hash = digest.process(signature);
-    tags = [];
+    List tagsB64;
+    if (tags != null) {
+      for (var tag in tags) {
+        if (tagsB64 != null) {
+          print('Adding tag: ${tag.toString()}');
+          tagsB64.add({
+            'name': encodeBase64EncodedBytes(utf8.encode(tag['name'])),
+                'value': encodeBase64EncodedBytes(utf8.encode(tag['value']))
+          });
+        } else {
+          print('Adding tag: ${tag.toString()}');
+          tagsB64 = [
+            {
+              'name': (encodeBase64EncodedBytes(utf8.encode(tag['name']))),
+                  'value':(encodeBase64EncodedBytes(utf8.encode(tag['value'])))
+            }
+          ];
+        }
+      }
+    }
     final id = encodeBase64EncodedBytes(hash);
     print('Transaction ID is: $id');
     final body = json.encode({
       'id': id,
       'last_tx': lastTx,
       'owner': _owner,
-      'tags': tags,
+      'tags': tagsB64,
       'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,

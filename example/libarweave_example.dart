@@ -34,7 +34,7 @@ void main() async {
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
   allTxns = await myWallet.allTransactionsToAddress();
   print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
-  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: Uint8List.fromList(utf8.encode(data)));
+  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: data);
 //  print('Raw transaction is: ${rawTransaction.toString()}');
   //final response = await myWallet.postTransaction(rawTransaction, lastTxn, txPrice, data: data);
   //print(response.statusCode);
