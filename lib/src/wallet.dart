@@ -83,9 +83,9 @@ class Wallet {
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      String data = ''}) {
+      List<int> data}) {
     final dataBytes =
-        decodeBase64EncodedBytes(encodeBase64EncodedBytes(utf8.encode(data)));
+        decodeBase64EncodedBytes(encodeBase64EncodedBytes(data));
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
@@ -118,12 +118,12 @@ class Wallet {
     return rawTransaction;
   }
 
-  Future<String> postTransaction(
+  Future<dynamic> postTransaction(
       List<int> signature, String lastTx, String reward,
       {String targetAddress = '',
       List tags,
       String quantity = '0',
-      String data = ''}) async {
+      List<int> data}) async {
     final digest = SHA256Digest();
     final hash = digest.process(signature);
     List tagsB64;
@@ -156,10 +156,10 @@ class Wallet {
       'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
       'reward': reward,
       'quantity': quantity,
-      'data': encodeBase64EncodedBytes(utf8.encode(data)),
+      'data': encodeBase64EncodedBytes(data),
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);
-    return response.toString();
+    return response;
   }
 }
