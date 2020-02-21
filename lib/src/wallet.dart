@@ -15,13 +15,7 @@ class Wallet {
       _jwk = jsonDecode(jsonWebKey);
       _wallet = JsonWebKey.fromJson(_jwk);
       _owner = _jwk['n'];
-      _address = base64Url.encode(sha256
-          .convert(base64Url.decode(
-              _owner + List.filled((4 - _owner.length % 4) % 4, '=').join()))
-          .bytes);
-      if (_address.endsWith('=')) {
-        _address = _address.substring(0, _address.length - 1);
-      }
+      _address = ownerToAddress(_owner);
     }
   }
 

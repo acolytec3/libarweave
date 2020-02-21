@@ -1,6 +1,4 @@
 import 'package:libarweave/libarweave.dart';
-import 'dart:convert';
-import 'dart:typed_data';
 
 void main() async {
   var walletString = '''{
@@ -27,6 +25,8 @@ void main() async {
   print('Last transaction reward :${txnDetails['reward']}');
   var txns = await myWallet.dataTransactionHistory();
   print('Last data transactions :${txns}');
+  txns = await myWallet.allTransactionsToAddress();
+  print('Last txns to address: ${txns}');
   final data = 'Darting into Arweave';
   var txPrice = await Transaction.transactionPrice(data:data);
   print('Price for transaction of "$data" is: $txPrice Winston');
@@ -34,7 +34,7 @@ void main() async {
   print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
   allTxns = await myWallet.allTransactionsToAddress();
   print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
-  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: data);
+//  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: data);
 //  print('Raw transaction is: ${rawTransaction.toString()}');
   //final response = await myWallet.postTransaction(rawTransaction, lastTxn, txPrice, data: data);
   //print(response.statusCode);

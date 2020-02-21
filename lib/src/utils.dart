@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
+import 'package:crypto/crypto.dart';
 
 String api_url = 'http://arweave.net';
 List peers;
@@ -84,3 +85,14 @@ List<int> decodeBase64EncodedBytes(String encodedString) =>
 String encodeBase64EncodedBytes(List<int> data) =>
     data == null ? null : base64Url.encode(data).replaceAll('=', '');
 
+String ownerToAddress(owner) { 
+  
+      var address = base64Url.encode(sha256
+          .convert(base64Url.decode(
+              owner + List.filled((4 - owner.length % 4) % 4, '=').join()))
+          .bytes);
+      if (address.endsWith('=')) {
+        address = address.substring(0, address.length - 1);
+      }
+      return address;
+}
