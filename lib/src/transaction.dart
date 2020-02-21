@@ -5,7 +5,15 @@ import 'package:libarweave/src/utils.dart';
 class Transaction {
     static Future<Map> getTransaction (String txId) async {
         final response = await getHttp('/tx/$txId');
-        return jsonDecode(response);
+        Map txn = jsonDecode(response);
+        txn['owner'] = ownerToAddress(txn['owner']);
+        if (txn.containsKey('target')){
+          txn['target'] = ownerToAddress(txn['target']);
+        }
+        if (txn.containsKey('tags')) {
+            txn['tags'] = decodeTags(txn['tags']);
+        }
+        return txn;
     }
     
     static Future<dynamic> arQl (String op, String expr1, String expr2) async {

@@ -72,7 +72,7 @@ double winstonToAr(String winston) {
 }
 
 String arToWinston(double ar) {
-  return (ar * pow(10,12)).toString();
+  return (ar * pow(10, 12)).toString();
 }
 
 List<int> decodeBase64EncodedBytes(String encodedString) =>
@@ -81,18 +81,37 @@ List<int> decodeBase64EncodedBytes(String encodedString) =>
         : base64Url.decode(encodedString +
             List.filled((4 - encodedString.length % 4) % 4, '=').join());
 
-
 String encodeBase64EncodedBytes(List<int> data) =>
     data == null ? null : base64Url.encode(data).replaceAll('=', '');
 
-String ownerToAddress(owner) { 
-  
-      var address = base64Url.encode(sha256
-          .convert(base64Url.decode(
-              owner + List.filled((4 - owner.length % 4) % 4, '=').join()))
-          .bytes);
-      if (address.endsWith('=')) {
-        address = address.substring(0, address.length - 1);
-      }
-      return address;
+String ownerToAddress(owner) {
+  var address = base64Url.encode(sha256
+      .convert(base64Url
+          .decode(owner + List.filled((4 - owner.length % 4) % 4, '=').join()))
+      .bytes);
+  if (address.endsWith('=')) {
+    address = address.substring(0, address.length - 1);
+  }
+  return address;
+}
+
+List<dynamic> decodeTags(List<dynamic> tags) {
+  if ((tags != []) && (tags != null)) {
+    List decodedTags = [];
+    for (var j = 0; j < tags.length; j++) {
+      (decodedTags == null) ? decodedTags = [
+        {
+          'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
+          'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
+        }
+      ] : decodedTags.add([
+        {
+          'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
+          'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
+        }
+      ]) ;
+    }
+    return decodedTags;
+  }
+  return [];
 }
