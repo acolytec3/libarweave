@@ -104,12 +104,12 @@ List<dynamic> decodeTags(List<dynamic> tags) {
           'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
           'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
         }
-      ] : decodedTags.add([
+      ] : decodedTags.add(
         {
           'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
           'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
         }
-      ]) ;
+      ) ;
     }
     return decodedTags;
   }
