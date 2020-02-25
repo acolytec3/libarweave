@@ -37,4 +37,17 @@ class Transaction {
     final response = await getHttp('/tx_anchor');
     return response;
   }
+
+   static Future<String> arweaveIdLookup(String address) async {
+    final query = {
+      'query':'query { transactions(from:["$address"],tags: [{name:"App-Name", value:"arweave-id"},{name:"Type", value:"name"}]) {id}}'};
+    final response = await postHttp('/arql', jsonEncode(query));
+    if (response.body != '') {
+	final txId = jsonDecode(response.body)['data']['transactions'][0]['id'];
+	final txDetails = await getTransaction(txId);
+	final id = txDetails['data'];
+	return utf8.decode(decodeBase64EncodedBytes(id));
+    }
+    return "No arweave id found";
+  }
 }
