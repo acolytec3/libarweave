@@ -5,11 +5,18 @@ import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
 
 class Wallet {
+
+  /// JSON Web Key formatted wallet key.
   JsonWebKey _wallet;
+
+  /// Owner encoded as a base64 URL string.
   String _owner;
+
+  /// Wallet address as UTF8 encoded string.
   String _address;
   dynamic _jwk;
 
+  /// Constructor for the [Wallet] class
   Wallet({String jsonWebKey}) {
     if (jsonWebKey != null) {
       _jwk = jsonDecode(jsonWebKey);
@@ -19,6 +26,7 @@ class Wallet {
     }
   }
 
+  /// Initializes a [Wallet] object and sets key public field values.
   void loadWallet(String jsonWebKey) {
     var jwk = jsonDecode(jsonWebKey);
     _wallet = JsonWebKey.fromJson(jwk);
@@ -32,40 +40,49 @@ class Wallet {
     }
   }
 
+  /// Wallet address as UTF8 encoded string.
   String get address {
     return _address;
   }
 
+  /// Wallet object as JsonWebKey.
   JsonWebKey get jwk {
     return _wallet;
   }
 
+  /// Returns current balance of wallet in AR. 
   Future<double> balance() async {
     var response = await getHttp('/wallet/$_address/balance');
     return winstonToAr(response);
   }
 
+  /// Returns ID for last transaction from wallet.
   Future<String> lastTransaction() async {
     var response = await getHttp('/wallet/$_address/last_tx');
     return response;
   }
 
+  /// Returns a list of transaction IDs for all transactions sent from wallet.
   Future<List> allTransactionsFromAddress() async {
     final response = await getHttp('/wallet/$_address/txs/');
     return jsonDecode(response);
   }
 
+  /// Returns a list of transaction IDs for all transactions sent to wallet
   Future<List> allTransactionsToAddress() async {
     final response = await getHttp('/wallet/$_address/deposits/');
     return jsonDecode(response);
   }
 
+  /// Returns a list of transaction IDs for transactions not included in provided [txnHistory] 
   Future<List> getNewTransactions(List txnHistory) async {
     List toTxns = await allTransactionsToAddress();
     List fromTxns = await allTransactionsFromAddress();
     final allTxns = toTxns + fromTxns;
     return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
-  } 
+  }
+
+  /// Returns a list of transaction IDs for all transactions that have tags attached to them initiated by the wallet.
   Future<List> dataTransactionHistory() async {
     final query = {
       'query':
@@ -79,6 +96,7 @@ class Wallet {
     return [];
   }
 
+  /// Returns a raw transaction ready to be signed and then posted to the blockchain.
   List<int> createTransaction(String lastTx, String reward,
       {String targetAddress = '',
       List tags,
@@ -118,6 +136,9 @@ class Wallet {
     return rawTransaction;
   }
 
+  /// Posts a signed transaction to the blockchain and returns the response object.
+  ///
+  /// Important Note: There is no package in Dart that currently supports the RSA-PSS signing method so the raw transaction produced by [createTransaction] must be signed using some other method and then passed to this function.
   Future<dynamic> postTransaction(
       List<int> signature, String lastTx, String reward,
       {String targetAddress = '',

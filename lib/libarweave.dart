@@ -1,4 +1,4 @@
-/// More dartdocs go here.
+/// A library of functions for interacting with the Arweave blockchain
 library libarweave;
 
 export 'src/libarweave_base.dart';

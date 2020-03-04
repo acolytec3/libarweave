@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 String api_url = 'http://arweave.net';
 List peers;
 
+/// Returns a list of the IP addresses of all known peer nodes in string format.
 Future<List> getPeers() async {
   List peers;
   final response = await http.get(api_url + '/peers');
@@ -17,6 +18,10 @@ Future<List> getPeers() async {
   return peers;
 }
 
+/// Sets the current IP address for the node to be used when querying the blockchain.
+///
+/// If a node address [peerAddress] is provided, sets the node address accordingly. 
+/// Otherwise, assigns a random node address from the list provided by [getPeers].
 void setPeer({String peerAddress}) async {
   if (peerAddress != null) {
     (api_url = peerAddress);
@@ -31,6 +36,10 @@ void setPeer({String peerAddress}) async {
   }
 }
 
+/// Helper function for HTTP GET methods
+///
+/// Retries up to 5 times if current node becomes unresponsive.
+/// Returns HTTP response object or error string.
 dynamic getHttp(String route) async {
   var i = 0;
   String error;
@@ -48,6 +57,11 @@ dynamic getHttp(String route) async {
   return error;
 }
 
+///Helper function for HTTP POST methods
+
+/// Retries up to 5 times if current node becomes unresponsive.
+///
+/// Returns HTTP response object or error string.
 dynamic postHttp(String route, dynamic body) async {
   var i = 0;
   String error;
@@ -67,23 +81,28 @@ dynamic postHttp(String route, dynamic body) async {
   return error;
 }
 
+/// Returns an AR representation of a winston string [winston].
 double winstonToAr(String winston) {
   return int.parse(winston) / pow(10, 12);
 }
 
+/// Returns a winston string representation of an AR value [ar].
 String arToWinston(double ar) {
   return (ar * pow(10, 12)).toString();
 }
 
+/// Returns a bytes representation of a base64 encoded string [encodedString].
 List<int> decodeBase64EncodedBytes(String encodedString) =>
     encodedString == null
         ? null
         : base64Url.decode(encodedString +
             List.filled((4 - encodedString.length % 4) % 4, '=').join());
 
+/// Returns a base64 encoded string representation of a bytes object [data].
 String encodeBase64EncodedBytes(List<int> data) =>
     data == null ? null : base64Url.encode(data).replaceAll('=', '');
 
+/// Converts a base64 encoded string representation of wallet address to a UTF8 encoded string representation.
 String ownerToAddress(owner) {
   var address = base64Url.encode(sha256
       .convert(base64Url
@@ -95,6 +114,9 @@ String ownerToAddress(owner) {
   return address;
 }
 
+/// Converts a base64 encoded set of Arweave transaction tags to their UTF8 encoded string equivalent.
+///
+/// Converts the name and value fields of an Arweave transaction tag from base64URL strings to UTF8 strings.
 List<dynamic> decodeTags(List<dynamic> tags) {
   if ((tags != []) && (tags != null)) {
     List decodedTags = [];
