@@ -60,6 +60,12 @@ class Wallet {
     return jsonDecode(response);
   }
 
+  Future<List> getNewTransactions(List txnHistory) async {
+    List toTxns = await allTransactionsToAddress();
+    List fromTxns = await allTransactionsFromAddress();
+    final allTxns = toTxns + fromTxns;
+    return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
+  } 
   Future<List> dataTransactionHistory() async {
     final query = {
       'query':
