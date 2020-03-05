@@ -76,8 +76,8 @@ class Wallet {
 
   /// Returns a list of transaction IDs for transactions not included in provided [txnHistory] 
   Future<List> getNewTransactions(List txnHistory) async {
-    List toTxns = await allTransactionsToAddress();
-    List fromTxns = await allTransactionsFromAddress();
+    var toTxns = await allTransactionsToAddress();
+    var fromTxns = await allTransactionsFromAddress();
     final allTxns = toTxns + fromTxns;
     return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
   }
@@ -109,7 +109,7 @@ class Wallet {
     final ownerBytes = decodeBase64EncodedBytes(_owner);
     final rewardBytes = utf8.encode(reward);
     final quantityBytes = utf8.encode(quantity);
-    List<int> tagsBytes = [] ;
+    var tagsBytes = <int>[] ;
 
     
     if (tags != null) {
