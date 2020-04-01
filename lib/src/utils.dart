@@ -75,7 +75,7 @@ dynamic postHttp(String route, dynamic body) async {
       print('Error message: ${__}');
       i++;
       await setPeer();
-      error = __;
+      error = __.toString();
     }
   }
   return error;
