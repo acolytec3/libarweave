@@ -181,6 +181,6 @@ class Wallet {
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);
-    return response;
+    return [response, id];
   }
 }
