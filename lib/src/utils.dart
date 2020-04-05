@@ -83,7 +83,8 @@ dynamic postHttp(String route, dynamic body) async {
 
 /// Returns an AR representation of a winston string [winston].
 double winstonToAr(String winston) {
-  return int.parse(winston) / pow(10, 12);
+  
+  return double.parse(winston) / pow(10, 12);
 }
 
 /// Returns a winston string representation of an AR value [ar].
