@@ -102,8 +102,8 @@ class Wallet {
       List tags,
       String quantity = '0',
       List<int> data}) {
-    final dataBytes =
-        decodeBase64EncodedBytes(encodeBase64EncodedBytes(data));
+    var dataBytes = <int>[];
+        
     final lastTxBytes = decodeBase64EncodedBytes(lastTx);
     final targetBytes = decodeBase64EncodedBytes(targetAddress);
     final ownerBytes = decodeBase64EncodedBytes(_owner);
@@ -112,6 +112,10 @@ class Wallet {
     var tagsBytes = <int>[] ;
 
     
+    if (data != null) {
+      decodeBase64EncodedBytes(encodeBase64EncodedBytes(data));
+    }
+
     if (tags != null) {
       for (var tag in tags) {
         tagsBytes += decodeBase64EncodedBytes(
@@ -147,7 +151,7 @@ class Wallet {
       List<int> data}) async {
     final digest = SHA256Digest();
     final hash = digest.process(signature);
-    List tagsB64;
+    List tagsB64 = [];
     if (tags != null) {
       for (var tag in tags) {
         if (tagsB64 != null) {
@@ -167,6 +171,9 @@ class Wallet {
         }
       }
     }
+    else {
+      tagsB64 = [];
+    }
     final id = encodeBase64EncodedBytes(hash);
     print('Transaction ID is: $id');
     final body = json.encode({
@@ -174,10 +181,10 @@ class Wallet {
       'last_tx': lastTx,
       'owner': _owner,
       'tags': tagsB64,
-      'target': encodeBase64EncodedBytes(utf8.encode(targetAddress)),
+      'target': targetAddress,
       'reward': reward,
       'quantity': quantity,
-      'data': encodeBase64EncodedBytes(data),
+      'data': (data != null) ? encodeBase64EncodedBytes(data) : '',
       'signature': encodeBase64EncodedBytes(signature)
     });
     final response = await postHttp('/tx', body);

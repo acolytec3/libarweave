@@ -89,7 +89,7 @@ double winstonToAr(String winston) {
 
 /// Returns a winston string representation of an AR value [ar].
 String arToWinston(double ar) {
-  return (ar * pow(10, 12)).toString();
+  return (ar * pow(10, 12)).truncate().toString();
 }
 
 /// Returns a bytes representation of a base64 encoded string [encodedString].
