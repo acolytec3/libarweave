@@ -111,9 +111,15 @@ class Wallet {
     final quantityBytes = utf8.encode(quantity);
     var tagsBytes = <int>[] ;
 
+    print('dataBytes $dataBytes');
+    print('lastTxBytes $lastTxBytes');
+    print('ownerBytes $ownerBytes');
+    print('rewardBytes $rewardBytes');
+    print('quantityBytes $quantityBytes');
+    print('targetBytes $targetBytes');
     
     if (data != null) {
-      decodeBase64EncodedBytes(encodeBase64EncodedBytes(data));
+      dataBytes = decodeBase64EncodedBytes(encodeBase64EncodedBytes(data));
     }
 
     if (tags != null) {
