@@ -46,6 +46,7 @@ dynamic getHttp(String route) async {
   while (i < 5) {
     try {
       final response = await http.get(api_url + route);
+      print("GET request: $api_url$route, response status code: ${response.statusCode} and body: ${response.body}");
       return response.body;
     } catch (__) {
       print('Error message: ${__}');

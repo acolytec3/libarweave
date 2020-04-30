@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
+import 'package:libarweave/src/transaction.dart';
 
 class Wallet {
 
@@ -64,13 +65,13 @@ class Wallet {
 
   /// Returns a list of transaction IDs for all transactions sent from wallet.
   Future<List> allTransactionsFromAddress() async {
-    final response = await getHttp('/wallet/$_address/txs/');
-    return jsonDecode(response);
+    final response = await Transaction.arQl('equals', 'from', address);
+    return response;
   }
 
   /// Returns a list of transaction IDs for all transactions sent to wallet
   Future<List> allTransactionsToAddress() async {
-    final response = await getHttp('/wallet/$_address/deposits/');
+    final response = await Transaction.arQl('equals', 'to', address);
     return jsonDecode(response);
   }
 
