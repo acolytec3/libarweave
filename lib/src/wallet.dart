@@ -67,7 +67,6 @@ class Wallet {
   /// Returns a list of transaction IDs for all transactions sent from wallet.
   Future<List> allTransactionsFromAddress() async {
     final response = await Transaction.arQl('equals', 'from', _address);
-    print(response.runtimeType);
     if (response.runtimeType == Response){
       return errorMessage(response);
     }
@@ -91,7 +90,14 @@ class Wallet {
   Future<List> getNewTransactions(List txnHistory) async {
     var toTxns = await allTransactionsToAddress();
     var fromTxns = await allTransactionsFromAddress();
-    final allTxns = toTxns + fromTxns;
+    var allTxns;
+    if ((toTxns[0] != 'Error') && (fromTxns[0] != 'Error')){
+      allTxns = toTxns + fromTxns;
+    }
+    else {
+      toTxns[0] != 'Error' ? allTxns = toTxns : allTxns = fromTxns;
+    }
+
     if (allTxns[0] != 'Error'){
       return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
     }
