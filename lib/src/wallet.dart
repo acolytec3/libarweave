@@ -65,14 +65,14 @@ class Wallet {
 
   /// Returns a list of transaction IDs for all transactions sent from wallet.
   Future<List> allTransactionsFromAddress() async {
-    final response = await Transaction.arQl('equals', 'from', address);
+    final response = await Transaction.arQl('equals', 'from', _address);
     return response;
   }
 
   /// Returns a list of transaction IDs for all transactions sent to wallet
   Future<List> allTransactionsToAddress() async {
-    final response = await Transaction.arQl('equals', 'to', address);
-    return jsonDecode(response);
+    final response = await Transaction.arQl('equals', 'to', _address);
+    return response;
   }
 
   /// Returns a list of transaction IDs for transactions not included in provided [txnHistory] 

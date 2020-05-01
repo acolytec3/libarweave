@@ -22,7 +22,7 @@ class Transaction {
   /// expression 1 [expr1], and expression 2 [expr2].
   static Future<dynamic> arQl(String op, String expr1, String expr2) async {
     final body = {'op': op, 'expr1': expr1, 'expr2': expr2};
-    final response = await http.post(api_url + '/arql', body: jsonEncode(body));
+    final response = await postHttp('/arql', jsonEncode(body));
     return jsonDecode(response.body);
   }
 
