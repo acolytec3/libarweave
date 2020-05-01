@@ -46,7 +46,7 @@ dynamic getHttp(String route) async {
   while (i < 5) {
     try {
       final response = await http.get(api_url + route);
-      print("GET request: $api_url$route, response status code: ${response.statusCode} and body: ${response.body}");
+      print('GET request: $api_url$route, response status code: ${response.statusCode} and body: ${response.body}');
       return response.body;
     } catch (__) {
       print('Error message: ${__}');
@@ -138,4 +138,9 @@ List<dynamic> decodeTags(List<dynamic> tags) {
     return decodedTags;
   }
   return [];
+}
+
+/// Helper method to construct error message when API request fails
+List errorMessage(http.Response response) {
+  return ['Error',response.statusCode,response.reasonPhrase];
 }

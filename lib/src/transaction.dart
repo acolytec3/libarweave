@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:libarweave/src/utils.dart';
 
@@ -23,7 +22,13 @@ class Transaction {
   static Future<dynamic> arQl(String op, String expr1, String expr2) async {
     final body = {'op': op, 'expr1': expr1, 'expr2': expr2};
     final response = await postHttp('/arql', jsonEncode(body));
-    return jsonDecode(response.body);
+    if (response.statusCode == 200)
+    {
+      return jsonDecode(response.body);
+    }
+    else {
+      return response;
+    }
   }
 
   /// Returns the current estimated transaction price in winston for a given data payload.

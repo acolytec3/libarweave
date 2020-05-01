@@ -26,8 +26,6 @@ void main() async {
   print('Last transaction reward :${txnDetails['reward']}');
   var txns = await myWallet.dataTransactionHistory();
   print('Last data transactions :${txns}');
-  txns = await myWallet.allTransactionsToAddress();
-  print('Last txns to address: ${txns}');
   final data = 'Darting into Arweave';
   var txPrice = await Transaction.transactionPrice(data:data);
   print('Price for transaction of "$data" is: $txPrice Winston');

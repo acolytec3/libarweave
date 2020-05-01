@@ -66,13 +66,24 @@ class Wallet {
   /// Returns a list of transaction IDs for all transactions sent from wallet.
   Future<List> allTransactionsFromAddress() async {
     final response = await Transaction.arQl('equals', 'from', _address);
-    return response;
+    print(response.runtimeType);
+    if (response.runtimeType == 'Response'){
+      return errorMessage(response);
+    }
+    else {
+      return response;
+    }
   }
 
   /// Returns a list of transaction IDs for all transactions sent to wallet
   Future<List> allTransactionsToAddress() async {
     final response = await Transaction.arQl('equals', 'to', _address);
-    return response;
+    if (response.runtimeType == 'Response'){
+      return errorMessage(response);
+    }
+    else {
+      return response;
+    }
   }
 
   /// Returns a list of transaction IDs for transactions not included in provided [txnHistory] 
@@ -80,7 +91,12 @@ class Wallet {
     var toTxns = await allTransactionsToAddress();
     var fromTxns = await allTransactionsFromAddress();
     final allTxns = toTxns + fromTxns;
-    return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
+    if (allTxns[0] != 'Error'){
+      return List.from((Set.of(allTxns)).difference(Set.of(txnHistory)));
+    }
+    else {
+      return allTxns;
+    }
   }
 
   /// Returns a list of transaction IDs for all transactions that have tags attached to them initiated by the wallet.
