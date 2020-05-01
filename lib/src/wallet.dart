@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
 import 'package:libarweave/src/transaction.dart';
+import 'package:http/http.dart';
 
 class Wallet {
 
@@ -67,7 +68,7 @@ class Wallet {
   Future<List> allTransactionsFromAddress() async {
     final response = await Transaction.arQl('equals', 'from', _address);
     print(response.runtimeType);
-    if (response.runtimeType == 'Response'){
+    if (response.runtimeType == Response){
       return errorMessage(response);
     }
     else {
@@ -78,7 +79,7 @@ class Wallet {
   /// Returns a list of transaction IDs for all transactions sent to wallet
   Future<List> allTransactionsToAddress() async {
     final response = await Transaction.arQl('equals', 'to', _address);
-    if (response.runtimeType == 'Response'){
+    if (response.runtimeType == Response){
       return errorMessage(response);
     }
     else {
