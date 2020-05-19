@@ -69,8 +69,7 @@ dynamic postHttp(String route, dynamic body) async {
   while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);
-      print('Http post request status code: ${response.statusCode}');
-      print('Http post request status reason: ${response.body.toString()}');
+      print('POST request: $api_url$route body: $body, response status code: ${response.statusCode} and body: ${response.body}');
       return response;
     } catch (__) {
       print('Error message: ${__}');
@@ -142,5 +141,5 @@ List<dynamic> decodeTags(List<dynamic> tags) {
 
 /// Helper method to construct error message when API request fails
 List errorMessage(http.Response response) {
-  return ['Error',response.statusCode,response.reasonPhrase];
+  return ['Error',response.statusCode,response.reasonPhrase, response.body.toString()];
 }
