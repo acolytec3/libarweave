@@ -5,11 +5,15 @@ import 'package:libarweave/src/utils.dart';
 import 'package:pointycastle/export.dart';
 import 'package:libarweave/src/transaction.dart';
 import 'package:http/http.dart';
+import 'package:ninja/ninja.dart' as _ninja;
 
 class Wallet {
 
   /// JSON Web Key formatted wallet key.
   JsonWebKey _wallet;
+
+  // RSAPrivateKey formatted wallet key.
+  _ninja.RSAPrivateKey _rsaPrivateKey;
 
   /// Owner encoded as a base64 URL string.
   String _owner;
@@ -25,6 +29,10 @@ class Wallet {
       _wallet = JsonWebKey.fromJson(_jwk);
       _owner = _jwk['n'];
       _address = ownerToAddress(_owner);
+      _rsaPrivateKey = _ninja.RSAPrivateKey(
+        base64ToBigInt(jwk['n']),base64ToBigInt(jwk['e']),base64ToBigInt(jwk['d']),base64ToBigInt(jwk['p']),base64ToBigInt(jwk['q'])
+        );
+      print(_rsaPrivateKey);
     }
   }
 
@@ -120,6 +128,20 @@ class Wallet {
     return [];
   }
 
+  /// Returns a list of transaction IDs for all transactions sent from wallet.
+  Future<List> allTransactions() async {
+    final query = {
+      'query':
+          'query {transactions(to: ["${_address}"]){id}} '
+    };
+    final response = await postHttp('/arql', jsonEncode(query));
+    if (response.body != '') {
+      final txns = jsonDecode(response.body)['data']['transactions'];
+      return txns;
+    }
+    return [];
+  }
+
   /// Returns a raw transaction ready to be signed and then posted to the blockchain.
   List<int> createTransaction(String lastTx, String reward,
       {String targetAddress = '',
@@ -170,6 +192,15 @@ class Wallet {
     return rawTransaction;
   }
 
+  List<int> signTransaction(List<int> rawTransaction){
+    return _rsaPrivateKey.signPss(rawTransaction, saltLength: 0);
+  }
+
+  bool verifyTransaction(List<int> signedTransaction, List<int> msg){
+    final publicKey = _rsaPrivateKey.toPublicKey;
+    return publicKey.verifySsaPss(signedTransaction, msg,saltLength: 0);
+  }
+  
   /// Posts a signed transaction to the blockchain and returns the response object.
   ///
   /// Important Note: There is no package in Dart that currently supports the RSA-PSS signing method so the raw transaction produced by [createTransaction] must be signed using some other method and then passed to this function.

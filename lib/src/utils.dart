@@ -20,7 +20,7 @@ Future<List> getPeers() async {
 
 /// Sets the current IP address for the node to be used when querying the blockchain.
 ///
-/// If a node address [peerAddress] is provided, sets the node address accordingly. 
+/// If a node address [peerAddress] is provided, sets the node address accordingly.
 /// Otherwise, assigns a random node address from the list provided by [getPeers].
 void setPeer({String peerAddress}) async {
   if (peerAddress != null) {
@@ -46,7 +46,8 @@ dynamic getHttp(String route) async {
   while (i < 5) {
     try {
       final response = await http.get(api_url + route);
-      print('GET request: $api_url$route, response status code: ${response.statusCode} and body: ${response.body}');
+      print(
+          'GET request: $api_url$route, response status code: ${response.statusCode} and body: ${response.body}');
       return response.body;
     } catch (__) {
       print('Error message: ${__}');
@@ -69,7 +70,8 @@ dynamic postHttp(String route, dynamic body) async {
   while (i < 5) {
     try {
       final response = await http.post(api_url + route, body: body);
-      print('POST request: $api_url$route body: $body, response status code: ${response.statusCode} and body: ${response.body}');
+      print(
+          'POST request: $api_url$route body: $body, response status code: ${response.statusCode} and body: ${response.body}');
       return response;
     } catch (__) {
       print('Error message: ${__}');
@@ -83,7 +85,6 @@ dynamic postHttp(String route, dynamic body) async {
 
 /// Returns an AR representation of a winston string [winston].
 double winstonToAr(String winston) {
-  
   return double.parse(winston) / pow(10, 12);
 }
 
@@ -98,6 +99,15 @@ List<int> decodeBase64EncodedBytes(String encodedString) =>
         ? null
         : base64Url.decode(encodedString +
             List.filled((4 - encodedString.length % 4) % 4, '=').join());
+
+/// Returns a BigInt representation of a base64Url encoded number [encoded].
+BigInt base64ToBigInt(String encoded) {
+  final b256 = BigInt.from(256);
+  encoded += List.filled((4 - encoded.length % 4) % 4, '=').join();
+  return base64Url
+      .decode(encoded)
+      .fold(BigInt.zero, (a, b) => a * b256 + BigInt.from(b));
+}
 
 /// Returns a base64 encoded string representation of a bytes object [data].
 String encodeBase64EncodedBytes(List<int> data) =>
@@ -122,17 +132,17 @@ List<dynamic> decodeTags(List<dynamic> tags) {
   if ((tags != []) && (tags != null)) {
     List decodedTags = [];
     for (var j = 0; j < tags.length; j++) {
-      (decodedTags == null) ? decodedTags = [
-        {
-          'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
-          'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
-        }
-      ] : decodedTags.add(
-        {
-          'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
-          'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
-        }
-      ) ;
+      (decodedTags == null)
+          ? decodedTags = [
+              {
+                'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
+                'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
+              }
+            ]
+          : decodedTags.add({
+              'name': utf8.decode(decodeBase64EncodedBytes(tags[j]['name'])),
+              'value': utf8.decode(decodeBase64EncodedBytes(tags[j]['value']))
+            });
     }
     return decodedTags;
   }
@@ -141,5 +151,10 @@ List<dynamic> decodeTags(List<dynamic> tags) {
 
 /// Helper method to construct error message when API request fails
 List errorMessage(http.Response response) {
-  return ['Error',response.statusCode,response.reasonPhrase, response.body.toString()];
+  return [
+    'Error',
+    response.statusCode,
+    response.reasonPhrase,
+    response.body.toString()
+  ];
 }

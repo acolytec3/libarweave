@@ -1,8 +1,9 @@
 /// {@example}
 import 'package:libarweave/libarweave.dart';
+import 'dart:convert';
 
 void main() async {
-  var walletString = '''{
+  var walletString2 = '''{
     "kty": "RSA",
     "e": "AQAB",
     "n": "ovFF6EbOtXeg7VnojIgtChgxfU6GZ16JjVj5JFHh6NGHJnq4p059BnMphcDx1mqb3yxM73FxhEszSFLcJiPzway6eIDiXuYiT-Sf_0Wl6_wDLvEmlz43psp7WYJumwpaSyiI_1FWmOVQnTnoAIKaOYKVqzUlteiECQj7XjJl0MZH16RlEfVqVpJ_8Ier4_QXIJ8Y3pe2KF3Lg9UANFU97nuvEM94CSzX-0WIju6Lykt3DBb2YtFFg4bJjOFv3T38nCZmDh8lYjm25_1qILalsB0XRoDxQy9FLxWb4zd09JsDhL0EYAQ_hNfOnQFVOBtYEHVYMCHYH6GoTcNgxmUkZPk4AfpAqZmjDzKfVJrw4Fr68pPTEQOQEzBcIWp61P21BSkhqO4QuFinkQsSH6NdTB_3FpbhYf34Hjf-iH7hdpdWo4aoRLb8eZeZcqBRZoRmlhQnOD-PVxQR_vb9rjXSjGkCWwRbsurVLWdBh_FQn0S9Q6EHqiV8nbW-R0Rk2E76JwgMFkqGUtZj8DeEqXJ2jlAvuzp56fXeAViPEtvUj1HheO8O3LxdVYCiapWWKq4qQVoRzdiyvydYSmbztgFUhekvmjNkxLNKOh71i3hFtoXycegqZ6izrUGoF2oD24lsTKsV5lV5pwfmUjVvxtHZm54bJIMfUDYbOV6yeDjYBb8",
@@ -13,10 +14,14 @@ void main() async {
     "dq": "a0_ey6OZWnWFleYHH60PtrGw7l_AXZvLbVBG_CLcfwQ1M1oi2OZVpxkQ4t95uTxq-lCdegZ9QhAfBessaOwLUk5IVjbk2Un98RByG784JuS-8-mrg7YKOA5fn56idax_IWiBE46Cxnu8ITlmbHKmHw-sdpnm3hb50jB4evJmt3fcw_KI8_zKPORBM3vxljy7NJnSSh7s7QE0Sl0Svb427Drut6L3rAimtK5mzCseTcg9pkp707ZbClcYWfafF9VdB2A9TgMCOo6xfJEANsT18GkMH4B6PXDHBAhsNrRh2O0XOeWsfZStoyj5Mdt3b9JJfPFMW3h38yQ_lrmKYZQfJQ",
     "qi": "aDsPYxE-JBYsYhCYXSU7WsCrnFxNsRpFMcYXdmdryYIdQUpeemChDGzVJXLnJhE4cAS9TtLcNg82xZSKZvHrnkbFpRfSJxzEnvIXW4V0LHkxkxbmM0e9B7UrpYm6LKtvEY6I7L8wHFpHdOwV6NjY925oULEV156X0r55V7N0XF-jy3rbm71DCWRh6IDRghhCZQ3aNgJxE-OtnABqasaY6CQnTDRXLkGE0kq9GCx85-92fQLHMzvrMhr9m_2MHYJ_gZehL4j95CQzhD3Zh602D0YYYwRSsU4h5HGjlmN52pe-rfTLgwCJq5295s7qUP8TTMzbZAOM_hehksHpAaFghA"
 }''';
+  var walletString = '''{ "kty": "RSA", "ext": true, "e": "AQAB", "n": "vWI0umSbVKvHm8A-q3rntDJ0npwhVsul_r-7P5FLiuBHa0hjZD_TE2aEJupbpjC1cc1MOrWw09S4UNAzdy7gtam0_ao5I3gUbwzUyNKFZVOTMoGnJoboCu8CCdUQSAFA-vOPck8MLnzv5HCV5JcBHOFBUg5JSZKRA3BD9XW0tyJlbZ_k8YUPSRPX9t8ny6NoIaHSJoaAPU9SpKUsoqeEOgkJiQMuIwIMNrRgGR_9iCjxwllJexGXSXqjG6Vp1-zebKXUZtGilMuxtcJ-yNQcQAXKmX6T6cgM62nPxv4OqAqQnQNV1w-y64Rhr8Zn171JvIiBqEsTBpdnb2VJTWkO8qWQbP3PqR3WMyQdpS1mkICUG2nFCoDcZutPWExzhPo8RLDLIhl4L2ExDcnQ1uEM_juFEn_w9zCU2OpgmYZzi7-5-ABzy6CZcnFrzSDfAcKPlPCG1TP0Q-5-xx1KEcGLX5C0E-KVF28D6Jm2tdaEqwIRH5QIFr8Qx8TV7tv6DWyWisTvwqTfJ4iktg-a6JM_xw32r5jzhcQIB94Zpscu3AE2EfBh4eBMWqoaKUwgroiU5uhlx_AEsgAdFqCfzgTlfe2yLemavHieUu_TUHYl1gBHJQ71GOFxmc9n3JjDHAZgBnWDvRwZt7nsU4xbhMMvawoXN7gXsySkzXN5wzCxv9k", "d": "Nb42xGZkhiSxYoutvTAFrOdcnN4lv-HO23pBgwqSa3i2C8XhHsPV_H1tJzX-iCzucLsX1NlWsuZ838IVuM6-yg684_d4e45KDjGP-OV1IYoUDZMpgg9qrh-hbnTeR_DDJfQUUxYHmPGvih5BCzum_zEVPln7hjtnl5g2UOP0QrwqGG_1omxmKBDPiqlNO8bFeDXZ00D8B2oJQ9vzzLzJE0cZQ555a0nbeXK6iqa_ZfJomQSJi7k0O4_n1aKdZL89Z4uvuPXos10Ss0fcftVipvB9zA1VoFQ7BltisU_LjPhijYwywfMcjSVmK2GcemanFC-Qy9dyML6qhbwyjxsvOELcCESQWgnfpkoibnIw13QmURk_IJ_XYU8AE8aq_gHcQn3u_fqb2peY-m-oFWcjWAy9YZz9G4X7DmYqE6ZCi-e0u427FckHVJ1MZfQE-ALPQBZIeFcbHvA8BgVS8yKrMMrCoiFCecamd1Go7ITtNsF2RDectvyiE0Ms3u8diJ6AzCv7_rypAzNHV5K44GNYP8Ww38Jks6rC5XGJw9cHVp49dZjEPHPZ5dGxAOhlqOQSQ8zn6zeYb9VRl-6Cjj4PmA2h2DLu5kaPCn1rDVKw4Pz5NSyZPq0-I6eXjoM54gE1UD1G5Fg9hLFcZMKeh78knlQ5Imn6r7dVZ3ajJC4OgAE", "p": "94RnFFyW6tQKaoEVZn9_BdugXKYayBGWrryxp8_qC7thMvagraWb_4ifcGbuvhPADIYBjfPyi1X2pLeLuE4ZdqUCbprCrUg9bwcw-2Q-z5ouQVwBxY0yjFpoAnWrPotJz5a3H_05slGipq1EpDBDKiBlwyHF1fOxFBkWEcBo6Slz6ki_FvIqXn24hGDtgSqw74wwg3sXxRKiv2vCUjSut7RqOq89nIvIEU2q9Kz7dpEi5PIXJ1BgdwfKX0rCqVBf5Zf9YbZ_WxnmQQZg_19KuMk5WTBONQi6rzlPozK3UVc3UMIR2eNou9-Q0qO4WdmvfR-jzS1vCx80fECHoASH2Q", "q": "w9_EYfd0LMNxoIWfDCZkTZMpGdYmN7RqdBvncCgY12b6a9Uq33NAOKwCbG3-gGZMvucVNRGTbYRrRXYLL28dL_A3lHRPV7sQcOlQZ_OP4l5HCAakoujQwI5iqkY64dYN6LXkmAYU1hpkOv8ds12h7BP--P9xS2-DsPvOWzfpcpX9RKPWiLneMIghqYDMvCAcSUxw_6kS9k5zgxBgDhT-7sRctyG1Mb4unThDvSOuF1bvYmf9GnkG7tdkwV3mC9u60yLkLgvrjUUzm20C4ERjK5n4u_wU4yC0GasKBDtkToXNX6CVVE0XJlatNfE_i7byoFP1jPfXqMydES0GlMv4AQ", "dp": "bedQje3-5Q56AYiHpBeAo20962WmBqgorDYE_GqJleQB6Msx1Wjvt6tGgHZ0E9pZMDZgglOLourstX76fz_OdqwWRF5biu3EuYQL79Q3P59KYqMj9kAX7dJG1LDC9OaMQ6y8a2vZLqCpBDFzhSQY7p-sD9TzL2khe7cX4ZH6A23wllru3pVw0rwoLj-LtgrqvbMV54vEpjD8KtsCUdYqrk9hy-T8CoLWtzgxbKtSjPcs81O7jC1YaAIBjgZ4IQ4bRqsSS0zph94cK0tVzo7Vcu-Gk1-rmkjh--QKxIBEfc2oNie2HXWoj6NZfu5LcToDfh-KcBR4dgvJFlLg5eCdIQ", "dq": "aLFw0QAnm0l3sVnaUe8vS3tty353_Ow0vgywHnWAGZnUHdDZUofSergNr5D3KAAF4z-2SSA00aOmhoD6p4bXbekSfAnS4sx8lC1Qqc84R8EmbDbIxr5z3Yf9Wo-hJ1Z3JrwaC9usRWfjzNjRMi7IvltNvB8kmjJnjDB68qym3XUn4wlDQN8_0Gbivyu1wpPTKqZt-2iOVxJFkXcuMDiurkZMXCHrLEQ_vA73vd-VTKpN1yZH1V99Aiokk2ox7IKsj--lUKtUYrTrSZbxo5dJ_mMU3L13GJNBUDroZqysB4Bi7krxphZyWi6X9C4XTgEiG-nkZE2QeourJCQR0XRYAQ", "qi": "oYYRysw_sca7Y57VFvyy4xVKIWjviOpp6T9yKOLFGdEK0vUkmLYZJs7TOTxJfKFcmIEBufGNCqpL1_YDY2Irb0Y-y2JN5NYEmG2VsAQjRfuJyNS67ui1fxsuygwihU2f7IRNt4ft1xZtmDOwVEREfu7wMMiexH2r9d-ZDeliTQDXwO86pNOjg9r9rTbq1Wcv4xQ0PVKDOXwU5BOMCndLHqghHZfaPDly5t1EJq_gr5IezOw2dm2nWSMVZXKsP3sa90MZh3FWJ0_Zaq1ELRNWTIYh-MXlj-PExgtxlDhP49ylGZ6sixtpeCrjUbU0ix1k3w_zOZeTngC1Yw1hcEnFoQ" }''';
   var myWallet = Wallet(jsonWebKey:walletString);
-  myWallet.loadWallet(walletString);
+ // myWallet.loadWallet(walletString2);
   print('Wallet address: ${myWallet.address}');
-  setPeer(peerAddress: 'https://arweave.net:443');
+  setPeer(peerAddress: 'https://perma.online:443');
+//  var txns = await myWallet.allTransactions();
+//  print(txns);
+  
   var balance = await myWallet.balance();
   print('Wallet balance: ${balance}');
   var txAnchor = await Transaction.transactionAnchor();
@@ -24,18 +29,21 @@ void main() async {
   var lastTxn = await myWallet.lastTransaction();
   var txnDetails = await Transaction.getTransaction(lastTxn);
   print('Last transaction reward :${txnDetails['reward']}');
-  var txns = await myWallet.dataTransactionHistory();
-  print('Last data transactions :${txns}');
+//  var txns = await myWallet.dataTransactionHistory();
+//  print('Last data transactions :${txns}');
   final data = 'Darting into Arweave';
   var txPrice = await Transaction.transactionPrice(data:data);
   print('Price for transaction of "$data" is: $txPrice Winston');
-  var allTxns = await myWallet.allTransactionsFromAddress();
-  print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
-  allTxns = await myWallet.allTransactionsToAddress();
-  print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
-  //final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: data);
-  //print('Raw transaction is: ${rawTransaction.toString()}');
-  //final response = await myWallet.postTransaction(rawTransaction, lastTxn, txPrice, data: data);
-  //print(response.statusCode);
-  //print(response.body);
+//  var allTxns = await myWallet.allTransactionsFromAddress();
+//  print('Tx IDs for all transactions from ${myWallet.address}: $allTxns');
+//  allTxns = await myWallet.allTransactionsToAddress();
+//  print('Tx IDs for all deposits made to ${myWallet.address}: $allTxns');
+  final rawTransaction = await myWallet.createTransaction(txAnchor, txPrice, data: utf8.encode(data));
+  print('Raw transaction is: ${rawTransaction.toString()}');
+  final signedTransaction  = myWallet.signTransaction(rawTransaction);
+  print('Signed transaction is: ${signedTransaction.toString()}');
+  print(myWallet.verifyTransaction(signedTransaction, utf8.encode(data)));
+//  final response = await myWallet.postTransaction(signedTransaction, lastTxn, txPrice, data: utf8.encode(data));
+//  print(response[0]);
+//  print(response[1]);
 }
